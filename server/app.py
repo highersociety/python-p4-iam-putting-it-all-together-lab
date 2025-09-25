@@ -12,16 +12,16 @@ class Signup(Resource):
         data = request.get_json()
         try:
             user = User(
-                username=data['username'],
+                username=data.get('username'),
                 image_url=data.get('image_url'),
                 bio=data.get('bio')
             )
-            user.password_hash = data['password']
+            user.password_hash = data.get('password')
             db.session.add(user)
             db.session.commit()
             session['user_id'] = user.id
             return user.to_dict(), 201
-        except (IntegrityError, ValueError) as e:
+        except (IntegrityError, ValueError, KeyError) as e:
             db.session.rollback()
             return {'error': str(e)}, 422
 
